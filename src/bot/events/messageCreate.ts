@@ -74,7 +74,7 @@ async function processImageAttachment(
     if (detection.flagged && !detection.requiresReview) {
       await handleFlaggedContent(message, detection, guildConfig, client);
     } else if (detection.requiresReview) {
-      await handleReviewRequired(message, detection, guildConfig);
+      await handleReviewRequired(message, detection);
     } else {
       logger.info('Image passed detection', {
         messageId: message.id,
@@ -153,8 +153,7 @@ async function handleFlaggedContent(
 
 async function handleReviewRequired(
   message: Message,
-  detection: any,
-  guildConfig: any
+  detection: any
 ): Promise<void> {
   try {
     await message.react('⚠️');

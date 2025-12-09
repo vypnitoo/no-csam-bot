@@ -1,3 +1,4 @@
+// @ts-ignore - imghash has no type definitions
 import { hash } from 'imghash';
 import { PrismaClient } from '@prisma/client';
 import { logger } from '../utils/logger';

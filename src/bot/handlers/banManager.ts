@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client';
-import { Client, Guild, GuildMember } from 'discord.js';
+import { Client, Guild } from 'discord.js';
 import { logger, logBan } from '../../utils/logger';
 
 const prisma = new PrismaClient();

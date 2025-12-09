@@ -1,4 +1,4 @@
-import { Client, EmbedBuilder, TextChannel, Guild, User } from 'discord.js';
+import { EmbedBuilder, TextChannel, Guild, User } from 'discord.js';
 import { PrismaClient } from '@prisma/client';
 import { logger } from '../../utils/logger';
 import { DetectionResult } from '../../detection/detectionPipeline';

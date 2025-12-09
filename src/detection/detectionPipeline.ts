@@ -60,8 +60,6 @@ class DetectionQueue {
 const detectionQueue = new DetectionQueue();
 
 export async function scanImageQueued(imageUrl: string): Promise<DetectionResult> {
-  const startTime = Date.now();
-
   try {
     const imageBuffer = await downloadImage(imageUrl);
 
