@@ -1,4 +1,4 @@
-name = "no-csam-detector"
+name = "no-csam-bot"
 main = "worker/index.ts"
 compatibility_date = "2025-12-09"
 
