@@ -1,5 +1,4 @@
-import sharp from 'sharp';
-import { bmvbhash } from 'blockhash-core';
+import { hash } from 'imghash';
 import { PrismaClient } from '@prisma/client';
 import { logger } from '../utils/logger';
 
@@ -15,20 +14,8 @@ export interface HashMatchResult {
 
 export async function computePerceptualHash(imageBuffer: Buffer): Promise<string> {
   try {
-    const processed = await sharp(imageBuffer)
-      .resize(256, 256, { fit: 'fill' })
-      .grayscale()
-      .raw()
-      .toBuffer({ resolveWithObject: true });
-
-    const imageData = {
-      width: processed.info.width,
-      height: processed.info.height,
-      data: new Uint8Array(processed.data),
-    };
-
-    const hash = bmvbhash(imageData, 16);
-    return hash;
+    const imageHash = await hash(imageBuffer, 16);
+    return imageHash;
   } catch (error) {
     logger.error('Error computing perceptual hash', { error });
     throw new Error('Failed to compute perceptual hash');
