@@ -7,19 +7,29 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model BotConfig {
+  id                    String   @id @default("main")
+  moderationServerId    String?
+  moderationChannelId   String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  @@map("bot_config")
+}
+
 model Guild {
   id                  String   @id
   name                String
   moderatorRoleIds    String
   detectionEnabled    Boolean  @default(true)
   autoDelete          Boolean  @default(true)
-  autoBan             Boolean  @default(true)
+  autoTimeout         Boolean  @default(true)
   alertChannelId      String?
   createdAt           DateTime @default(now())
   updatedAt           DateTime @updatedAt
 
   detections Detection[]
-  bans       Ban[]
+  timeouts   Timeout[]
   auditLogs  AuditLog[]
 
   @@map("guilds")
@@ -35,7 +45,7 @@ model User {
   updatedAt      DateTime @updatedAt
 
   detections       Detection[]
-  bans             Ban[]
+  timeouts         Timeout[]
   moderatorReviews ModeratorReview[]
   auditLogs        AuditLog[]
 
@@ -64,22 +74,22 @@ model Detection {
   @@map("detections")
 }
 
-model Ban {
+model Timeout {
   id                String   @id @default(uuid())
   userId            String
-  guildId           String?
+  guildId           String
   level             Int      @default(1)
   reason            String
-  banType           String
+  timeoutType       String
   active            Boolean  @default(true)
-  expiresAt         DateTime?
+  expiresAt         DateTime
   createdAt         DateTime @default(now())
   updatedAt         DateTime @updatedAt
 
   user              User    @relation(fields: [userId], references: [id])
-  guild             Guild?  @relation(fields: [guildId], references: [id])
+  guild             Guild   @relation(fields: [guildId], references: [id])
 
-  @@map("bans")
+  @@map("timeouts")
 }
 
 model ModeratorReview {

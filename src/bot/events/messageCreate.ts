@@ -1,7 +1,7 @@
 import { Message, Client } from 'discord.js';
 import { PrismaClient } from '@prisma/client';
 import { scanImageQueued } from '../../detection/detectionPipeline';
-import { handleUserOffense } from '../handlers/banManager';
+import { handleUserOffense } from '../handlers/timeoutManager';
 import { alertModerators, sendDMAlert, notifyModeratorOfPendingReview } from '../handlers/moderatorAlert';
 import { logger, logDetection } from '../../utils/logger';
 

@@ -1,9 +1,25 @@
 # No CSAM Discord Bot
 
-A Discord bot designed to detect and prevent CSAM content sharing across Discord servers with a progressive ban system and web dashboard for moderation.
+A Discord bot designed to detect and prevent CSAM content sharing across Discord servers with a progressive timeout system and centralized moderation.
 
 **Author:** vypnito
 **Package:** `@vypnito/no-csam-bot`
+
+## ⚠️ IMPORTANT: Deployment Architecture
+
+This project has **TWO PARTS** that deploy to **DIFFERENT PLACES**:
+
+1. **Cloudflare Worker** (`worker/` folder) → Deploy to Cloudflare Workers
+   - Handles image detection API
+   - Deploy manually with `wrangler` CLI
+   - See `worker/README.md` for instructions
+
+2. **Discord Bot** (rest of the code) → Deploy to YOUR SERVER
+   - Runs on your home lab / VPS
+   - Monitors Discord and calls the worker
+   - See `DEPLOYMENT.md` for instructions
+
+**DO NOT** try to deploy the entire repo to Cloudflare - it won't work!
 
 ## Features
 
