@@ -1,0 +1,230 @@
+# No CSAM Discord Bot
+
+A Discord bot designed to detect and prevent CSAM content sharing across Discord servers with a progressive ban system and web dashboard for moderation.
+
+**Author:** vypnito
+**Package:** `@vypnito/no-csam-bot`
+
+## Features
+
+- Multi-layer content detection (perceptual hashing + cloud APIs)
+- Progressive ban system (server ban → global ban with moderator approval)
+- Real-time moderator alerts
+- Web dashboard for configuration and review
+- Optimized for low-power hardware (Intel N100, 16GB RAM)
+- 100% free to run using free-tier APIs
+
+## Detection Methods
+
+1. **Perceptual Hashing** (Primary) - Instant, lightweight
+2. **Cloudflare AI Workers** (100k requests/day FREE) - Recommended
+3. **Sightengine API** (2k requests/day FREE) - Alternative
+
+## Requirements
+
+- Node.js 18+
+- Discord Bot Token
+- Cloudflare or Sightengine API credentials (optional but recommended)
+
+## Installation
+
+1. Clone the repository
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Copy `.env.example` to `.env` and fill in your credentials:
+   ```bash
+   cp .env.example .env
+   ```
+
+4. Generate Prisma client:
+   ```bash
+   npm run prisma:generate
+   ```
+
+5. Run database migrations:
+   ```bash
+   npm run prisma:migrate
+   ```
+
+## Configuration
+
+Edit `.env` file with your credentials:
+
+### Required:
+- `DISCORD_BOT_TOKEN` - Your Discord bot token
+- `DISCORD_CLIENT_ID` - Your Discord application client ID
+- `DISCORD_CLIENT_SECRET` - Your Discord application client secret
+- `JWT_SECRET` - Random string (min 32 characters)
+- `ENCRYPTION_KEY` - Random string (min 32 characters)
+
+### Optional (Choose at least one):
+- `CLOUDFLARE_ACCOUNT_ID` + `CLOUDFLARE_API_TOKEN` (Recommended)
+- `SIGHTENGINE_API_USER` + `SIGHTENGINE_API_SECRET`
+
+## Getting API Keys
+
+### Cloudflare AI Workers (Recommended - 100k/day FREE)
+1. Go to https://dash.cloudflare.com/
+2. Create account (no credit card required)
+3. Navigate to AI → Workers AI
+4. Get your Account ID and create API token
+
+### Sightengine (Alternative - 2k/day FREE)
+1. Go to https://sightengine.com/
+2. Sign up for free account
+3. Get your API user and API secret from dashboard
+
+## Running the Bot
+
+### Development:
+```bash
+npm run dev
+```
+
+### Production:
+```bash
+npm run build
+npm start
+```
+
+### With PM2 (Recommended for 24/7):
+```bash
+npm install -g pm2
+pm2 start dist/bot/index.js --name no-csam-bot
+pm2 save
+pm2 startup
+```
+
+## Discord Bot Setup
+
+1. Go to https://discord.com/developers/applications
+2. Create New Application
+3. Go to "Bot" tab:
+   - Enable "MESSAGE CONTENT INTENT"
+   - Enable "GUILD MEMBERS INTENT"
+4. Copy bot token to `.env`
+5. Go to "OAuth2" → "URL Generator":
+   - Select scopes: `bot`, `applications.commands`
+   - Select permissions:
+     - Manage Messages
+     - Ban Members
+     - Send Messages
+     - Embed Links
+     - Add Reactions
+     - Read Message History
+6. Use generated URL to invite bot to your server
+
+## Server Configuration
+
+After inviting the bot:
+
+1. Set moderator roles:
+   - Bot will create a database entry for your server
+   - Update `moderatorRoleIds` in database or via dashboard
+   - Format: comma-separated role IDs (e.g., `123456789,987654321`)
+
+2. Set alert channel:
+   - Create a private channel for moderator alerts
+   - Update `alertChannelId` in database or via dashboard
+
+## Progressive Ban System
+
+### Level 1 - First Offense:
+- User banned from current server only
+- Logged to global database
+- Moderators alerted for review
+
+### Level 2 - Second Offense:
+- Detected on a different server
+- Added to moderator review queue
+- Upon approval: banned from ALL servers using the bot
+- Auto-bans user if they join any connected server
+
+## Performance
+
+Optimized for Intel N100 (4 cores) with 16GB RAM:
+
+- Hash checking: <10ms per image
+- Cloud API: 1-3 seconds per image
+- Memory usage: ~500-700MB total
+- CPU usage: 10-20% under normal load
+- Can handle 10-20+ concurrent servers
+
+## Database
+
+Using SQLite by default (perfect for moderate use).
+
+To use PostgreSQL:
+1. Install PostgreSQL
+2. Update `DATABASE_URL` in `.env`:
+   ```
+   DATABASE_URL="postgresql://user:password@localhost:5432/nocsam"
+   ```
+3. Run migrations: `npm run prisma:migrate`
+
+## Security & Privacy
+
+- NO actual images are stored
+- Only perceptual hashes and metadata
+- User IDs are masked in logs
+- Data auto-deleted after 90 days (configurable)
+- All actions are audited
+
+## Legal Compliance
+
+This bot is designed for content moderation and community safety. Server owners are responsible for:
+
+- Reporting illegal content to appropriate authorities
+- Complying with local laws and regulations
+- Having clear terms of service
+
+## Troubleshooting
+
+### Bot not detecting images:
+- Check if MESSAGE CONTENT intent is enabled
+- Verify bot has "Read Messages" permission
+- Check logs in `logs/combined.log`
+
+### API errors:
+- Verify API credentials in `.env`
+- Check API quota limits
+- Review `logs/error.log` for details
+
+### Database errors:
+- Run `npm run prisma:generate`
+- Delete `dev.db` and run `npm run prisma:migrate` again
+
+## Development
+
+### Run tests:
+```bash
+npm test
+```
+
+### View database:
+```bash
+npm run prisma:studio
+```
+
+### Build:
+```bash
+npm run build
+```
+
+## Support
+
+For issues and questions:
+- Check logs: `logs/combined.log` and `logs/error.log`
+- Review configuration in `.env`
+- Ensure all required environment variables are set
+
+## License
+
+MIT License - See LICENSE file for details
+
+## Disclaimer
+
+This bot is provided as-is for content moderation purposes. The author is not responsible for misuse or misconfiguration. Server owners must comply with all applicable laws and Discord's Terms of Service.

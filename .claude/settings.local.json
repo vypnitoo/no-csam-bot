@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir /a \"C:\\Users\\jenik\\VypnitoProjects\\Custom Orders\\No CSAM\")",
+      "Bash(dir:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

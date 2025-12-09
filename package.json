@@ -1,0 +1,53 @@
+{
+  "name": "@vypnito/no-csam-bot",
+  "version": "1.0.0",
+  "description": "Discord bot for preventing CSAM content sharing with progressive ban system",
+  "main": "dist/bot/index.js",
+  "scripts": {
+    "dev": "tsx watch src/bot/index.ts",
+    "build": "tsc",
+    "start": "node dist/bot/index.js",
+    "prisma:generate": "prisma generate",
+    "prisma:migrate": "prisma migrate dev",
+    "prisma:studio": "prisma studio",
+    "dashboard:dev": "cd src/dashboard/client && npm run dev",
+    "dashboard:build": "cd src/dashboard/client && npm run build"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "moderation",
+    "content-safety"
+  ],
+  "author": "vypnito",
+  "license": "MIT",
+  "dependencies": {
+    "@prisma/client": "^5.22.0",
+    "discord.js": "^14.16.3",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.1",
+    "sharp": "^0.33.5",
+    "blockhash-core": "^1.1.1",
+    "axios": "^1.7.7",
+    "jsonwebtoken": "^9.0.2",
+    "bcrypt": "^5.1.1",
+    "cors": "^2.8.5",
+    "express-rate-limit": "^7.4.1",
+    "winston": "^3.17.0",
+    "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.1",
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "@types/bcrypt": "^5.0.2",
+    "@types/cors": "^2.8.17",
+    "@types/ws": "^8.5.13",
+    "prisma": "^5.22.0",
+    "typescript": "^5.7.2",
+    "tsx": "^4.19.2"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
