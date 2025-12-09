@@ -95,7 +95,7 @@ async function scanImage(imageBuffer: Buffer, imageUrl: string): Promise<Detecti
       };
     }
 
-    const apiResult = await detectWithAPI(imageBuffer, imageUrl);
+    const apiResult = await detectWithAPI(imageUrl);
 
     const flagged = apiResult.detected;
     const confidence = apiResult.confidence;

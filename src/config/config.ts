@@ -17,10 +17,8 @@ interface Config {
     jwtSecret: string;
   };
   detection: {
-    cloudflare?: {
-      accountId: string;
-      apiToken: string;
-    };
+    workerUrl?: string;
+    workerApiKey?: string;
     sightengine?: {
       apiUser: string;
       apiSecret: string;
@@ -68,12 +66,8 @@ export const config: Config = {
     jwtSecret: getEnvVar('JWT_SECRET'),
   },
   detection: {
-    cloudflare: getOptionalEnvVar('CLOUDFLARE_ACCOUNT_ID') && getOptionalEnvVar('CLOUDFLARE_API_TOKEN')
-      ? {
-          accountId: getOptionalEnvVar('CLOUDFLARE_ACCOUNT_ID')!,
-          apiToken: getOptionalEnvVar('CLOUDFLARE_API_TOKEN')!,
-        }
-      : undefined,
+    workerUrl: getOptionalEnvVar('WORKER_URL'),
+    workerApiKey: getOptionalEnvVar('WORKER_API_KEY'),
     sightengine: getOptionalEnvVar('SIGHTENGINE_API_USER') && getOptionalEnvVar('SIGHTENGINE_API_SECRET')
       ? {
           apiUser: getOptionalEnvVar('SIGHTENGINE_API_USER')!,
@@ -101,7 +95,7 @@ export function validateConfig(): void {
     throw new Error('Discord bot token is required');
   }
 
-  if (!config.detection.cloudflare && !config.detection.sightengine) {
+  if (!config.detection.workerUrl && !config.detection.sightengine) {
     console.warn('Warning: No cloud detection API configured. Only hash matching will be available.');
   }
 

@@ -11,50 +11,52 @@ export interface APIDetectionResult {
   error?: string;
 }
 
-export async function detectWithCloudflare(imageBuffer: Buffer): Promise<APIDetectionResult> {
+export async function detectWithCloudflareWorker(imageUrl: string): Promise<APIDetectionResult> {
   const startTime = Date.now();
 
-  if (!config.detection.cloudflare) {
+  if (!config.detection.workerUrl || !config.detection.workerApiKey) {
     return {
       detected: false,
       confidence: 0,
-      provider: 'cloudflare',
+      provider: 'cloudflare-worker',
       processingTimeMs: Date.now() - startTime,
-      error: 'Cloudflare API not configured',
+      error: 'Cloudflare Worker URL or API key not configured',
     };
   }
 
   try {
     const response = await axios.post(
-      `https://api.cloudflare.com/client/v4/accounts/${config.detection.cloudflare.accountId}/ai/run/@cf/microsoft/resnet-50`,
-      imageBuffer,
+      config.detection.workerUrl,
+      { imageUrl },
       {
         headers: {
-          'Authorization': `Bearer ${config.detection.cloudflare.apiToken}`,
-          'Content-Type': 'application/octet-stream',
+          'X-API-Key': config.detection.workerApiKey,
+          'Content-Type': 'application/json',
         },
-        timeout: 10000,
+        timeout: 15000,
       }
     );
 
-    const result = response.data.result;
-    const nsfwScore = result.find((r: any) => r.label?.toLowerCase().includes('nsfw'))?.score || 0;
+    const result = response.data;
 
-    logger.info('Cloudflare detection complete', { nsfwScore });
+    logger.info('Cloudflare Worker detection complete', {
+      confidence: result.confidence,
+      detected: result.detected
+    });
 
     return {
-      detected: nsfwScore > config.detection.detectionThreshold,
-      confidence: nsfwScore,
-      provider: 'cloudflare',
-      labels: result.map((r: any) => r.label),
+      detected: result.detected,
+      confidence: result.confidence,
+      provider: 'cloudflare-worker',
+      labels: result.labels,
       processingTimeMs: Date.now() - startTime,
     };
   } catch (error: any) {
-    logger.error('Cloudflare API error', { error: error.message });
+    logger.error('Cloudflare Worker API error', { error: error.message });
     return {
       detected: false,
       confidence: 0,
-      provider: 'cloudflare',
+      provider: 'cloudflare-worker',
       processingTimeMs: Date.now() - startTime,
       error: error.message,
     };
@@ -111,12 +113,12 @@ export async function detectWithSightengine(imageUrl: string): Promise<APIDetect
   }
 }
 
-export async function detectWithAPI(imageBuffer: Buffer, imageUrl?: string): Promise<APIDetectionResult> {
-  if (config.detection.cloudflare) {
-    return await detectWithCloudflare(imageBuffer);
+export async function detectWithAPI(imageUrl: string): Promise<APIDetectionResult> {
+  if (config.detection.workerUrl) {
+    return await detectWithCloudflareWorker(imageUrl);
   }
 
-  if (config.detection.sightengine && imageUrl) {
+  if (config.detection.sightengine) {
     return await detectWithSightengine(imageUrl);
   }
 
